@@ -15,6 +15,7 @@ const firebaseConfig = {
   measurementId: "G-Y7WS5N0D1P"
 };
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -247,4 +248,29 @@ document.addEventListener('DOMContentLoaded', () => {
       container.appendChild(star);
     }
   });
+});
+
+// ฟังก์ชันสำหรับดึงข้อมูลสินค้าที่อนุมัติแล้วจาก Google Sheets
+async function loadProductsFromGoogleSheets() {
+  // แทนที่ 'YOUR_SHEET_BEST_API_URL' ด้วยลิงก์ API ที่ได้มาจาก Sheet.best
+  const API_URL = "https://api.sheetbest.com/sheets/07547328-0813-45bf-83d3-d0befe94174f"; 
+  
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    
+    // กรองเฉพาะสินค้าที่มี status เป็น "approved"
+    const approvedProducts = data.filter(item => item.status === "approved");
+    
+    // นำข้อมูลไปแสดงผลใส่ในหน้าเว็บ (HTML)
+    renderProductsToWeb(approvedProducts);
+    
+  } catch (error) {
+    console.error("ไม่สามารถโหลดข้อมูลจาก Google Sheets ได้:", error);
+  }
+}
+
+// เรียกใช้งานฟังก์ชันเมื่อเปิดหน้าเว็บ
+document.addEventListener("DOMContentLoaded", () => {
+  loadProductsFromGoogleSheets();
 });
